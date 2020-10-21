@@ -1,0 +1,121 @@
+---
+title: "Reporte Regresión Logística"
+author: "Durán Toledo Alejandro"
+date: "20/10/2020"
+output: html_document
+---
+
+### Introducción.
+
+<div style="text-align: justify">
+En el banco Toledo S.A de C.V siempre estamos comprometidos con el trabajo en equipo, la presentación de resultados y sobre todo el análisis profundo de nuestros proyectos. Siendo una empresa socialmente responsable, con ideales y valores éticos que nos permiten un buen desarrollo en el ámbito empresarial.
+  
+Como parte del análisis mensual en el área de ciencia de datos, en colaboración con el área de riesgo, presentamos a continuación el Reporte de Regresión Logística donde mes con mes actualizamos el desglose de características determinantes en el riesgo de crédito, el análisis del valor/tamaño de la cartera en riesgo, la estrategia actual de negocio y el análisis de escenarios para clientes en riesgo y no riesgo.
+  
+Así pudiendo conocer el perfil de cliente con mayor y menor riesgo para con ello generar una estrategia de selección de clientes, es decir, ¿Cómo institución podemos hacer la adquisición del cliente? o bien ¿Deberíamos rechazar a clientes con ciertas características por tener alto riesgo crediticio?.
+
+Dando [click aquí](https://github.com/alberto-mateos-mo/seminario-est-fciencias/blob/master/linear_models/logistic/data/Default.csv) podremos encontrar la base de datos con la que trabajamos este mes. 
+
+A continuación tenemos una breve descripción de las variables independientes a analizar:
+
+<div/>
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-tqmk{background-color:#00d2cb;border-color:inherit;color:#ffffff;text-align:center;vertical-align:top}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+.tg .tg-0lax{text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-tqmk">Variable</th>
+    <th class="tg-tqmk">Descripción</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">- Default: </td>
+    <td class="tg-0pky">Es la variable objetivo que queremos analizar, es una variable binaria donde 0 implica que pagan su crédito y 1 que no pagan el crédito.</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">- Duration:</td>
+    <td class="tg-0pky">Es la duración del crédito.</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">- Credit_history:</td>
+    <td class="tg-0pky">Es una variable categórica con 4 opciones que explica el historial crediticio del cliente.<br>  a) All paid, es decir que ha pagado todos sus créditos.<br>  b) Critical/ other existing credit, es decir que la persona tiene un estado crítico o hay otros créditos existentes que no ha pagado.<br>  c) Delayed previosly, la persona ha sacado créditos antes y ha tenido retraso al momento de pagarlos.<br>  d) Existing paid, es decir que la persona tiene créditos existentes pero ya están pagados.<br>  e) No credits/ all paid, el cliente no tiene créditos o todos ya están pagados.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Purpose: </td>
+    <td class="tg-0lax">Es una variable categórica que indica el propósito del préstamo.<br>  a) Business.<br>&nbsp;&nbsp;b) Domestic appliance.<br>&nbsp;&nbsp;c) Education.<br>&nbsp;&nbsp;d) Furniture/equipment.<br>&nbsp;&nbsp;e) New car.<br>&nbsp;&nbsp;f) Other.<br>&nbsp;&nbsp;g) Radio/tv.<br>&nbsp;&nbsp;h) Repairs.<br>&nbsp;&nbsp;i) Retraining.<br>&nbsp;&nbsp;j) Used car.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Credit_amount:</td>
+    <td class="tg-0lax">Es el monto del crédito.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Installment_commitment</td>
+    <td class="tg-0lax">Es el compromiso de pago a 1, 2, 3 o 4 plazos.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Persolan_status:</td>
+    <td class="tg-0lax">Es el estado civil de la persona, es una variable categórica con las siguientes opciones.<br>&nbsp;&nbsp;a) female div/dep/mar.<br>&nbsp;&nbsp;b) male div/sep.<br>&nbsp;&nbsp;c) male mar/wid.<br>&nbsp;&nbsp;d) male single.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Residence_since:</td>
+    <td class="tg-0lax">Es una variable que nos da 1, 2, 3 o 4 años que tiene de residencia.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Property_magnitud:</td>
+    <td class="tg-0lax">Es que magnitud de propiedades tiene el cliente, es una variable categórica con las siguientes opciones.<br>&nbsp;&nbsp;a) car.<br>&nbsp;&nbsp;b) life insurance.<br>&nbsp;&nbsp;c) no known property.<br>&nbsp;&nbsp;d) real estate.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Age:</td>
+    <td class="tg-0lax">La edad del cliente.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Other_payment_plans:</td>
+    <td class="tg-0lax">Son otros planes de banco, de igual forma es una variable categórica con las características.<br>&nbsp;&nbsp;a) bank.<br>&nbsp;&nbsp;b) none.<br>&nbsp;&nbsp;c) stores.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Housing:</td>
+    <td class="tg-0lax">Es el tipo de casa que tiene el cliente, es una variable categórica con 3 opciones; own, rent o for free.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Existing_credits:</td>
+    <td class="tg-0lax">Son los créditos existentes que tiene el cliente.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Job: </td>
+    <td class="tg-0lax">Es el tipo de trabajo que tiene el cliente, dividido en 4 categorías.<br>&nbsp;&nbsp;a) high qualif/self emp/mgmt.<br>&nbsp;&nbsp;b) skilled.<br>&nbsp;&nbsp;c) unemp/unskilled non res.<br>&nbsp;&nbsp;d) unskilled resident.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Num_dependents:</td>
+    <td class="tg-0lax">Son los dependientes que tiene el cliente.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Own_telephone:</td>
+    <td class="tg-0lax">Es una variable categórica y binaria, “yes” si tiene teléfono propio o “no” si no tiene teléfono propio.</td>
+  </tr>
+  <tr>
+    <td class="tg-0lax">- Foreign_worker:</td>
+    <td class="tg-0lax">Es una variable categórica y binaria, “yes” si es un trabajador extranjero o “no” si no es extranjero.</td>
+  </tr>
+</tbody>
+</table>
+
+
+### Desarrollo.
+
+Debido a que nuestra base de datos contiene variables categóricas es necesarios transformar estas a variables dummies. De tal forma que nuestra base queda [así.]()
+
+```{r, include=FALSE}
+library(tidyverse)
+```
+
+
